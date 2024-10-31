@@ -1,0 +1,81 @@
+#!/usr/bin/ksh
+#!/usr/bin/ksh
+
+if [[ -s $PSC_FILES_INBOUND/PSCSDAILYEXTRACT_$BUSINESS_DATE.dat ]] ; then
+  exit 0
+  else
+       " Empty file from source "
+	  exit 1
+fi
+##ABOVE CHECKS FOR EMPTY FILE#########################
+
+cntfile=`wc -l $PSC_FILES_INBOUND/UNWANTED_$BUSINESS_DATE-RAW.dat | cut -d " " -f1`
+cntfileptype=`wc -l $PSC_FILES_INBOUND/PSCNONFNCLTRANPAYTGRUP_$BUSINESS_DATE.DAT |  cut -d " " -f1`
+cntfilettype=`wc -l $PSC_FILES_INBOUND/PSCFNCLTRAN_$BUSINESS_DATE.DAT |  cut -d " " -f1`
+cntfileatype=`wc -l $PSC_FILES_INBOUND/PSCNONFNCLTRANAUDT_$BUSINESS_DATE.DAT |  cut -d " " -f1`
+a=3
+b=1
+if [ $cntfile == 3 ] && [ $cntfileptype == 1 ]
+then
+   echo "T|2" >> $PSC_FILES_INBOUND/PSCNONFNCLTRANPAYTGRUP_$BUSINESS_DATE.DAT
+fi
+
+if [ $cntfile == 3 ] && [ $cntfilettype == 1 ]
+then
+   echo "T|2" >> $PSC_FILES_INBOUND/PSCFNCLTRAN_$BUSINESS_DATE.DAT
+fi 
+
+if [ $cntfile == 3 ] && [ $cntfileatype == 1 ]
+then
+   echo "T|2" >> $PSC_FILES_INBOUND/PSCNONFNCLTRANAUDT_$BUSINESS_DATE.DAT
+
+else
+   echo "all good"
+fi
+
+
+#ABOVE PADS HEADER AND TRAILER IF NO DETAIL RECORDS ARE PRESENT##############################
+
+#!/usr/bin/ksh
+
+count=`wc -l $AI_SERIAL_LOG/psc_filelist.dat`
+b=0
+if [ $count == $b ]
+then
+   echo "0"
+else
+   echo "1"
+fi
+
+##ABOVE COUNTS FILES LIST###############
+
+
+
+#!/usr/bin/ksh
+echo $PSC_ENV
+echo "File process Starts"
+cd /etl/inbound/$PSC_ENV//psc
+ls -1 PSCSDAILYEXTRACT_????????.dat  > $AI_SERIAL_LOG/psc_filelist.dat
+
+####CHECK THE FILE EXISTS OR NOT IF NOT THEN FAIL###
+
+#!/usr/bin/ksh
+rm -f $PSC_FILES_INBOUND/PSCNONFNCLTRANPAYTGRUP_$BUSINESS_DATE-RAW.dat;
+
+rm -f $PSC_FILES_INBOUND/PSCFNCLTRAN_$BUSINESS_DATE-RAW.dat;
+
+
+rm -f  $PSC_FILES_INBOUND/PSCNONFNCLTRANAUDT_$BUSINESS_DATE-RAW.dat;
+
+unix2dos $PSC_FILES_INBOUND/PSCSDAILYEXTRACT_$BUSINESS_DATE.dat 
+
+mv $PSC_FILES_INBOUND/PSCSDAILYEXTRACT_$BUSINESS_DATE.dat   $PSC_DONE_FILES_INBOUND/
+
+rm -f $PSC_FILES_INBOUND/UNWANTED_$BUSINESS_DATE-RAW.dat 
+
+#### housekeeping and unix to dos file handling########
+
+
+
+
+
