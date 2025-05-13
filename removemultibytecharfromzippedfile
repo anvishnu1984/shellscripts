@@ -1,0 +1,58 @@
+[gowdaa1_adm]$ cat Multibyte_rm.ksh
+#!/bin/ksh
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+CRS_CTS_SERIAL_PENDING=$1
+
+INPUT_FILENAME_DTL=$2
+
+cd ${CRS_CTS_SERIAL_PENDING}
+
+pwd
+
+multi=$INPUT_FILENAME_DTL
+
+gunzip $multi
+
+s=$multi
+
+echo $multi
+
+fbname=$(basename $multi  .gz)
+#string=`cat $CRS_CTS_SERIAL_PENDING/$fbname`
+echo $fbname
+
+#string=$(cat $CRS_CTS_SERIAL_PENDING/$fbname)
+string=$(  < "$CRS_CTS_SERIAL_PENDING/$fbname")
+#echo -e "$string"
+multicharline=""
+for (( i=0; i<${#string}; i++ ))
+do
+  char="${string:$i:1}"
+  ascii_value=$(printf '%d' "'$char")
+  hex_value=$(echo -n $char | od -A n -t x1)
+  #echo "ascii value is "
+  #echo $ascii_value
+  #echo "hex value is "
+  #echo $hex_value
+   if [ $ascii_value -gt $Upperlimitbyteval ]
+   then
+      multicharline="$char$multicharline"
+      #echo "a is equal to b"
+   elif [ $ascii_value -lt $Upperlimitbyteval ] && [ $ascii_value -gt $Lowerlimitbyteval ]
+   then
+      Value="valid value"
+   else
+       echo "no further conditions"
+   fi
+  echo "Character: $char, ASCII Value: $ascii_value"
+done
+echo "$multicharline"
+
+b="$(<<<"$string" tr -d "$multicharline")"
+#echo "$b"
+echo   "$b" >  "$CRS_CTS_SERIAL_PENDING/$fbname"
+#echo   "$b" > "/home/gowdaa1_adm/test.dat"
+gzip $fbname
